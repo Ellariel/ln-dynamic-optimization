@@ -6,43 +6,27 @@ from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.env_checker import check_env
 
-import utils, proto
+import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--approach', default='PPO', type=str)
 parser.add_argument('--n_envs', default=4, type=int)
 parser.add_argument('--env', default='env', type=str)
-
-#parser.add_argument('--subgraph', default=50, type=int)
-#parser.add_argument('--idx', default=0, type=int)
-#parser.add_argument('--subset', default='randomized', type=str)
-
 parser.add_argument('--attempts', default=10, type=int)
 parser.add_argument('--epochs', default=100, type=int)
 parser.add_argument('--timesteps', default=1e4, type=int)
 
 args = parser.parse_args()
 
-#idx = args.idx
 n_envs = args.n_envs
 timesteps = args.timesteps
 approach = args.approach
 epochs = args.epochs
 attempts = args.attempts
-#subgraph = args.subgraph
-#subset = args.subset
 
 if args.env == 'env':
     version = 'env'
-    from env import LNEnv  
-
-def max_neighbors(G):
-    def neighbors_count(G, id):
-        return len(list(G.neighbors(id)))
-    max_neighbors = 0
-    for id in G.nodes:
-      max_neighbors = max(max_neighbors, neighbors_count(G, id))
-    return max_neighbors
+    from env import LNEnv
 
 base_dir = './'
 train_limit = 10000
@@ -69,7 +53,7 @@ train_set = T[:train_size]
 test_set = T[train_size:train_size+test_size]
 #valid_set = T[train_size+test_size:]
 
-print(f'graph, n: {len(G.nodes)}, e: {len(G.edges)}, max neighbors: {max_neighbors(G)}')
+print(f'graph, n: {len(G.nodes)}, e: {len(G.edges)}, max neighbors: {utils.max_neighbors(G)}')
 print(f'transations count: {len(T)}, train_set: {len(train_set)}, test_set: {len(test_set)}')#, valid_set: {len(valid_set)}')
 file_mask = f'{approach}-{version}-{n_envs}'
 
@@ -112,9 +96,10 @@ for a in range(attempts):
         reward = E.env_method('get_reward')
         mean_reward = np.mean(reward, axis=1)
         max_mean_reward = np.max(mean_reward)
+        min_mean_reward = np.min(mean_reward)
         
         print(f'n_envs: {n_envs}, epoch: {epoch}/{epochs}, attempt: {a}/{attempts}')        
-        print(f"max mean reward: {max_mean_reward:.3f}~{mean_reward}")
+        print(f"max mean reward: {min_mean_reward:.3f} < {max_mean_reward:.3f} ~ {mean_reward}")
         if epoch % 2:
             model.save(f)
         else:

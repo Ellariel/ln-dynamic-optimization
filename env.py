@@ -1,17 +1,16 @@
 import random
-import networkx as nx
 import numpy as np
 from gymnasium import Env, spaces
-from operator import itemgetter
 
 from proto import *
 from utils import *
 
 class LNEnv(Env): 
-    def __init__(self, G, transactions, observation_size=5, global_energy_mix=None, train=True) -> None:
+    def __init__(self, G, transactions, proto_type='LND', observation_size=5, global_energy_mix=None, train=True) -> None:
         self.features = ['geodist', 'sum_ghg', 'delay', 'feeratio', 'intercontinental_hops', 'intercountry_hops']
         self.transactions = transactions
         self.global_energy_mix = global_energy_mix
+        self.proto_type = proto_type
         self.train = train
         self.g = G
         self.observation_size = observation_size
@@ -31,17 +30,13 @@ class LNEnv(Env):
                 else:
                     params.append([0] * len(self.features))
             return np.asarray(params, dtype=np.float32)
-        #print(self.u)
-        #print(get_params(self.u))
-        #print(self.v)
-        #print(get_params(self.v))
+
         return np.hstack((get_params(self.u), get_params(self.v)))
         
     def reset(self, seed=None):
         tx = random.choice(self.transactions)
         self.u, self.v, self.amount = tx[0], tx[1], tx[2]   
         self.current_observation = self.get_observation()
-        #print(self.current_observation)
         return self.current_observation, {}
             
     def step(self, action):
@@ -50,16 +45,15 @@ class LNEnv(Env):
 
         path = get_shortest_path(self.g, self.u, self.v, self.amount, 
                                  global_energy_mix=self.global_energy_mix,
-                                 proto_type='LND', _e=action)
+                                 proto_type=self.proto_type, _e=action)
 
         if self.train:
-            reward += self._compute_reward(path) 
+            reward += self.compute_reward(path) 
             self.reward.append(reward)          
         
         return self.current_observation, reward, True, False, {}   
   
-    def _compute_reward(self, path):
-        reward = 0
+    def compute_reward(self, path):
         
         params = get_path_params(self.g, path, self.amount, self.global_energy_mix)
         reward = params['sum_ghg'] * params['delay'] * params['feeratio'] * -1

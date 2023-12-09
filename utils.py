@@ -6,6 +6,14 @@ from tqdm import tqdm
 import random
 from geopy.distance import geodesic
 
+def max_neighbors(G):
+    def neighbors_count(G, id):
+        return len(list(G.neighbors(id)))
+    max_neighbors = 0
+    for id in G.nodes:
+      max_neighbors = max(max_neighbors, neighbors_count(G, id))
+    return max_neighbors
+
 def not_na(x):
     return pd.notna(x)
 
