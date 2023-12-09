@@ -62,7 +62,7 @@ class LNEnv(Env):
         reward = 0
         
         params = get_path_params(self.g, path, self.amount, self.global_energy_mix)
-        reward = -params['sum_ghg']
+        reward = params['sum_ghg'] * params['delay'] * params['feeratio']
         
         return reward
         
