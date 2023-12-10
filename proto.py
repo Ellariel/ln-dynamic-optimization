@@ -113,4 +113,4 @@ def perform_payment(G, u, v, amount, path,
                     probability = np.random.choice([0.0010, 0.0015, 0.0020, 0.0025, 0.0030], size=1)[0]
             network_failure = network_failure or np.random.choice([True, False], size=1,                                                      
                                                                   p=[probability, 1 - probability])[0]
-    return bool(network_failure)
+    return not bool(network_failure)
