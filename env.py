@@ -6,7 +6,7 @@ from proto import *
 from utils import *
 
 class LNEnv(Env): 
-    def __init__(self, G, transactions, proto_type='LND', observation_size=5, global_energy_mix=None, train=True) -> None:
+    def __init__(self, G, transactions, proto_type='LND', observation_size=10, global_energy_mix=None, train=True) -> None:
         self.features = ['geodist', 'sum_ghg', 'delay', 'feeratio', 'intercontinental_hops', 'intercountry_hops']
         self.transactions = transactions
         self.global_energy_mix = global_energy_mix
