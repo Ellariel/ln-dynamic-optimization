@@ -3,7 +3,7 @@ import networkx as nx
 from itertools import islice
 import requests, random
 
-import utils
+from utils import *
 
 def normalize(x, min, max):
     if x <= min:
@@ -65,19 +65,19 @@ def cost_function(G, u, v, amount, proto_type='LND', global_energy_mix=None, e=0
         
     elif proto_type == 'H(LND)':  
         cost = (amount + fee) * G.edges[u, v]['delay'] * LND_RISK_FACTOR + fee
-        cost += utils.get_carbon_costs(G, u, v, global_energy_mix, e=e)
+        cost += get_carbon_costs(G, u, v, global_energy_mix, e=e)
         
     elif proto_type == 'H(CLN)':  
         fee = fee * (1 + DEFAULT_FUZZ * FUZZ)
         cost = (amount + fee) * G.edges[u, v]['delay'] * C_RISK_FACTOR + RISK_BIAS
-        cost += utils.get_carbon_costs(G, u, v, global_energy_mix, e=e) * 1e3 # scaling because of higher averaged value of CLN cost function
+        cost += get_carbon_costs(G, u, v, global_energy_mix, e=e) * 1e3 # scaling because of higher averaged value of CLN cost function
         
     elif proto_type == 'H(ECL)':  
         n_capacity = 1 - (normalize(G.edges[u, v]['capacity_sat'], MIN_CAP, MAX_CAP))
         n_age = normalize(BLOCK_HEIGHT - G.edges[u, v]['age'], MIN_AGE, MAX_AGE)
         n_delay = normalize(G.edges[u, v]['delay'], MIN_DELAY, MAX_DELAY)
         cost = fee * (n_delay * DELAY_RATIO + n_capacity * CAPACITY_RATIO + n_age * AGE_RATIO) 
-        cost += utils.get_carbon_costs(G, u, v, global_energy_mix, e=e)
+        cost += get_carbon_costs(G, u, v, global_energy_mix, e=e)
 
     else:
         cost = 1
@@ -92,3 +92,25 @@ def get_shortest_path(G, u, v, amount, proto_type='LND', global_energy_mix=None,
         return nx.shortest_path(G, u, v, weight=weight_function)
     except:
         pass
+    
+def perform_payment(G, u, v, amount, path, 
+                    intercontinental_failure_probablity=0.05,
+                    intercountry_failure_probablity=0.01):
+
+    network_failure = False
+    for i in range(len(path) - 1):
+            probability = 1
+            #if G.has_edge(path[i], path[i + 1]):
+                # e = G.edges[path[i], path[i + 1]]
+            a, b = get_continent(G, path[i]), get_continent(G, path[i + 1])
+            if a and b and a != b:
+                probability = intercontinental_failure_probablity
+            else:
+                a, b = get_country(G, path[i]), get_country(G, path[i + 1])
+                if a and b and a != b:
+                    probability = intercountry_failure_probablity
+                else:
+                    probability = 1
+            network_failure = network_failure or np.random.choice([True, False], size=1,                                                      
+                                                                  p=[probability, 1 - probability])[0]
+    return bool(network_failure)

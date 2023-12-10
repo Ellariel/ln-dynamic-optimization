@@ -49,7 +49,7 @@ train_set = T[:train_size]
 test_set = T[train_size:train_size+test_size]
 #valid_set = T[train_size+test_size:]
 
-print(f'graph, n: {len(G.nodes)}, e: {len(G.edges)}, max neighbors: {utils.max_neighbors(G)}')
+print(f'graph, n: {len(G.nodes)}, e: {len(G.edges)}, max neighbors: {max_neighbors(G)}')
 print(f'transations count: {len(T)}, train_set: {len(train_set)}, test_set: {len(test_set)}')#, valid_set: {len(valid_set)}')
 
 E = LNEnv(G, test_set, global_energy_mix=global_energy_mix, train=False)
@@ -96,6 +96,8 @@ def get_tx_params(tx, proto_type='LND'):
                                  global_energy_mix=global_energy_mix,
                                  proto_type=proto_type, _e=action)    
     params = get_path_params(G, path, tx[2], global_energy_mix)
+    params['succeed'] = perform_payment(G, tx[0], tx[1], tx[2], path)
+    #print(params['succeed'])
     return params
 
 alg = ['LND', 'H(LND)', 'A(LND)',
@@ -110,7 +112,7 @@ for a in tqdm(alg):
         results = []
         random.seed(13)
         np.random.seed(13)
-        for tx in tqdm(test_set, leave=True, desc=a):
+        for tx in tqdm(test_set, leave=True, desc=a): #[:1]
             results.append(get_tx_params(tx, proto_type=a))
         with open(file_name, 'w') as f:
             json.dump(results, f)
