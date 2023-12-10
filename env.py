@@ -56,7 +56,8 @@ class LNEnv(Env):
     def compute_reward(self, path):
         
         params = get_path_params(self.g, path, self.amount, self.global_energy_mix)
-        reward = params['sum_ghg'] * params['delay'] * params['feeratio'] * -1
+        params['succeed'] = perform_payment(self.g, self.u, self.v, self.amount, path)
+        reward = params['sum_ghg'] * params['delay'] * (1 - params['succeed']) * -1
         
         return reward
         

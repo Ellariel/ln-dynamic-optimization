@@ -110,7 +110,7 @@ def perform_payment(G, u, v, amount, path,
                 if a and b and a != b: # interconuntry network failure
                     probability = intercountry_failure_probablity
                 else: # 0.1 - 0.3% of packets normally to be lost because of TCP/IP
-                    probability = np.random.choice([0.0010, 0.0015, 0.0020, 0.0025, 0.0030], 1)[0]
+                    probability = np.random.choice([0.0010, 0.0015, 0.0020, 0.0025, 0.0030], size=1)[0]
             network_failure = network_failure or np.random.choice([True, False], size=1,                                                      
                                                                   p=[probability, 1 - probability])[0]
     return bool(network_failure)
