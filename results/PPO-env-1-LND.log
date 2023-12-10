@@ -1,6 +1,0 @@
-time;approach;version;n_envs;max_mean_reward;mean_reward;epoch;epochs;attempt;total_timesteps;filename
-1702216676.2535064;PPO;env;1;-2.904253134821447;[-2.90425313];1;100;0;10000.0;./weights/PPO-env-1-LND.sav
-1702216852.9533947;PPO;env;1;-2.8587916607081825;[-2.85879166];2;100;0;10000.0;./weights/PPO-env-1-LND.sav
-1702217034.4442196;PPO;env;1;-2.837878878822099;[-2.83787888];3;100;0;10000.0;./weights/PPO-env-1-LND.sav
-1702217225.875045;PPO;env;1;-2.8268681905920334;[-2.82686819];4;100;0;10000.0;./weights/PPO-env-1-LND.sav
-1702217404.5378335;PPO;env;1;-2.8278198470331146;[-2.82781985];5;100;0;10000.0;./weights/PPO-env-1-LND.sav
