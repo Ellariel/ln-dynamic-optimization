@@ -94,8 +94,8 @@ def get_shortest_path(G, u, v, amount, proto_type='LND', global_energy_mix=None,
         pass
     
 def perform_payment(G, u, v, amount, path, 
-                    intercontinental_failure_probablity=0.05,
-                    intercountry_failure_probablity=0.01):
+                    intercontinental_failure_probablity=0.005,
+                    intercountry_failure_probablity=0.001):
 
     network_failure = False
     for i in range(len(path) - 1):
@@ -103,14 +103,14 @@ def perform_payment(G, u, v, amount, path,
             #if G.has_edge(path[i], path[i + 1]):
                 # e = G.edges[path[i], path[i + 1]]
             a, b = get_continent(G, path[i]), get_continent(G, path[i + 1])
-            if a and b and a != b:
+            if a and b and a != b: # intercontinental network failure
                 probability = intercontinental_failure_probablity
             else:
                 a, b = get_country(G, path[i]), get_country(G, path[i + 1])
-                if a and b and a != b:
+                if a and b and a != b: # interconuntry network failure
                     probability = intercountry_failure_probablity
-                else:
-                    probability = 1
+                else: # 0.1 - 0.3% of packets normally to be lost because of TCP/IP
+                    probability = np.random.choice([0.0010, 0.0015, 0.0020, 0.0025, 0.0030], 1)[0]
             network_failure = network_failure or np.random.choice([True, False], size=1,                                                      
                                                                   p=[probability, 1 - probability])[0]
     return bool(network_failure)
