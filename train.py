@@ -13,7 +13,7 @@ parser.add_argument('--approach', default='PPO', type=str)
 parser.add_argument('--n_envs', default=4, type=int)
 parser.add_argument('--env', default='env', type=str)
 parser.add_argument('--attempts', default=10, type=int)
-parser.add_argument('--epochs', default=100, type=int)
+parser.add_argument('--epochs', default=1000, type=int)
 parser.add_argument('--timesteps', default=1e4, type=int)
 parser.add_argument('--proto', default='LND', type=str)
 
