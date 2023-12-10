@@ -1,4 +1,4 @@
-import os, time, pickle, argparse, json
+import os, time, pickle, argparse, json, shutil
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -15,6 +15,7 @@ parser.add_argument('--env', default='env', type=str)
 parser.add_argument('--attempts', default=10, type=int)
 parser.add_argument('--epochs', default=100, type=int)
 parser.add_argument('--timesteps', default=1e4, type=int)
+parser.add_argument('--proto', default='LND', type=str)
 
 args = parser.parse_args()
 
@@ -23,6 +24,7 @@ timesteps = args.timesteps
 approach = args.approach
 epochs = args.epochs
 attempts = args.attempts
+proto_type = args.proto
 
 if args.env == 'env':
     version = 'env'
@@ -55,18 +57,18 @@ test_set = T[train_size:train_size+test_size]
 
 print(f'graph, n: {len(G.nodes)}, e: {len(G.edges)}, max neighbors: {utils.max_neighbors(G)}')
 print(f'transations count: {len(T)}, train_set: {len(train_set)}, test_set: {len(test_set)}')#, valid_set: {len(valid_set)}')
-file_mask = f'{approach}-{version}-{n_envs}'
+file_mask = f'{approach}-{version}-{n_envs}-{proto_type}'
 
 learning_rate = 0.000001
 
 #e = LNEnv(G, train_set, global_energy_mix=global_energy_mix)
 #check_env(e)
 
-for a in range(attempts):
+for a in range(attempts + 1):
     print(f"approach: {approach}, env: {version}, n_envs: {n_envs}")
     print(f"train: {file_mask}")
 
-    E = make_vec_env(lambda: LNEnv(G, train_set, global_energy_mix=global_energy_mix), n_envs=n_envs)
+    E = make_vec_env(lambda: LNEnv(G, train_set, global_energy_mix=global_energy_mix, proto_type=proto_type), n_envs=n_envs)
 
     lf = os.path.join(results_dir, f'{file_mask}.log')
     log = pd.read_csv(lf, sep=';') if os.path.exists(lf) else None
@@ -100,10 +102,10 @@ for a in range(attempts):
         
         print(f'n_envs: {n_envs}, epoch: {epoch}/{epochs}, attempt: {a}/{attempts}')        
         print(f"max mean reward: {min_mean_reward:.3f} < {max_mean_reward:.3f} ~ {mean_reward}")
-        if epoch % 2:
-            model.save(f)
-        else:
-            model.save(f+'.tmp')
+        
+        if os.path.exists(f):
+            shutil.move(f, f + '.tmp')
+        model.save(f)
 
         log = pd.concat([log, pd.DataFrame.from_dict({'time' : time.time(),
                                                 'approach' : approach,
@@ -116,11 +118,10 @@ for a in range(attempts):
                                                 'attempt' : a,
                                                 'total_timesteps' : timesteps,
                                                 'filename' : f,
-#                                                'n': len(G.nodes),
-#                                                'e': len(G.edges),
-#                                                'max_neighbors':max_neighbors(G),
-#                                                'min_pathlen': min(test_total_pathlen + train_total_pathlen),
-#                                                'max_pathlen': max(test_total_pathlen + train_total_pathlen),
-#                                                'avg_pathlen': np.mean(test_total_pathlen + train_total_pathlen),
                                                 }, orient='index').T], ignore_index=True)
         log.to_csv(lf, sep=';', index=False)
+    
+    for i in range(a, attempts + 1):
+        if not os.path.exists(f+f'-{i}'):
+            model.save(f+f'-{i}')
+            break
