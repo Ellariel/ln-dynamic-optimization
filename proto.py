@@ -94,8 +94,8 @@ def get_shortest_path(G, u, v, amount, proto_type='LND', global_energy_mix=None,
         pass
     
 def perform_payment(G, u, v, amount, path, 
-                    intercontinental_failure_probablity=0.005,
-                    intercountry_failure_probablity=0.001):
+                    intercontinental_failure_probablity=0.015,
+                    intercountry_failure_probablity=0.010):
 
     network_failure = False
     for i in range(len(path) - 1):
