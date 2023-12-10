@@ -101,7 +101,7 @@ for a in range(attempts + 1):
         min_mean_reward = np.min(mean_reward)
         
         print(f'n_envs: {n_envs}, epoch: {epoch}/{epochs}, attempt: {a}/{attempts}')        
-        print(f"max mean reward: {min_mean_reward:.3f} < {max_mean_reward:.3f} ~ {mean_reward}")
+        print(f"min max mean reward: {min_mean_reward:.3f} < {max_mean_reward:.3f} ~ {mean_reward}")
         
         if os.path.exists(f):
             shutil.move(f, f + '.tmp')
