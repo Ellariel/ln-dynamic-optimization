@@ -1,4 +1,4 @@
-import random
+import random, itertools
 import numpy as np
 from gymnasium import Env, spaces
 
@@ -6,7 +6,7 @@ from proto import *
 from utils import *
 
 class LNEnv(Env): 
-    def __init__(self, G, transactions, proto_type='LND', observation_size=10, global_energy_mix=None, train=True) -> None:
+    def __init__(self, G, transactions, proto_type='LND', observation_size=15, global_energy_mix=None, train=True) -> None:
         self.features = ['geodist', 'sum_ghg', 'delay', 'feeratio', 'intercontinental_hops', 'intercountry_hops']
         self.transactions = transactions
         self.global_energy_mix = global_energy_mix
@@ -21,7 +21,12 @@ class LNEnv(Env):
     def get_observation(self):
         
         def get_params(id):
-            neighbors = list(self.g.neighbors(id))
+            #neighbors = list(self.g.neighbors(id))
+            subgraph = nx.ego_graph(self.g, id, radius=3)
+            neighbors = list(itertools.islice(subgraph.nodes(), self.observation_size))
+            #print(len(neighbors))
+            #print(neighbors)
+            
             params = []
             for i in range(self.observation_size):
                 if i < len(neighbors):
@@ -37,6 +42,7 @@ class LNEnv(Env):
         tx = random.choice(self.transactions)
         self.u, self.v, self.amount = tx[0], tx[1], tx[2]   
         self.current_observation = self.get_observation()
+        #print(self.current_observation)
         return self.current_observation, {}
             
     def step(self, action):
@@ -57,7 +63,7 @@ class LNEnv(Env):
         
         params = get_path_params(self.g, path, self.amount, self.global_energy_mix)
         params['succeed'] = perform_payment(self.g, self.u, self.v, self.amount, path)
-        reward = int(params['succeed']) *10 / (params['sum_ghg'] / params['dist'] / 10**5)
+        reward = int(params['succeed']) / (params['sum_ghg'] / params['dist'] / 1000)
         
         return reward
         

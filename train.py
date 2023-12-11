@@ -6,6 +6,9 @@ from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.env_checker import check_env
 
+import warnings
+warnings.filterwarnings("ignore")
+
 import utils
 
 parser = argparse.ArgumentParser()
