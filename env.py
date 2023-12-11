@@ -15,7 +15,8 @@ class LNEnv(Env):
         self.g = G
         self.observation_size = observation_size
         self.observation_space = spaces.Box(low=0, high=1000, shape=(self.observation_size, len(self.features) * 2), dtype=np.float32)
-        self.action_space = spaces.Box(low=-2, high=2, shape=(1, ), dtype=np.float32)       
+        self.action_space = spaces.Box(low=-2, high=2, shape=(1, ), dtype=np.float32)
+        self.observation_cache = {}     
         self.reward = []
         
     def get_observation(self):
@@ -36,7 +37,10 @@ class LNEnv(Env):
                     params.append([0] * len(self.features))
             return np.asarray(params, dtype=np.float32)
 
-        return np.hstack((get_params(self.u), get_params(self.v)))
+        if (self.u, self.v) not in self.observation_cache:
+            self.observation_cache[(self.u, self.v)] = np.hstack((get_params(self.u), get_params(self.v)))      
+
+        return self.observation_cache[(self.u, self.v)]
         
     def reset(self, seed=None):
         tx = random.choice(self.transactions)
