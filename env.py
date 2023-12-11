@@ -57,7 +57,7 @@ class LNEnv(Env):
         
         params = get_path_params(self.g, path, self.amount, self.global_energy_mix)
         params['succeed'] = perform_payment(self.g, self.u, self.v, self.amount, path)
-        reward = (params['sum_ghg'] * params['delay'] * -1) / 10**5 + int(params['succeed'])
+        reward = int(params['succeed']) *10 / (-1 * params['sum_ghg'] * params['dist'] / 10**5)
         
         return reward
         
