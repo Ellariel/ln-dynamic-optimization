@@ -23,14 +23,14 @@ class LNEnv(Env):
         def get_params(id):
             #neighbors = list(self.g.neighbors(id))
             subgraph = nx.ego_graph(self.g, id, radius=3)
-            neighbors = list(itertools.islice(subgraph.nodes(), self.observation_size))
+            neighbors = list(itertools.islice(subgraph.edges(), self.observation_size))
             #print(len(neighbors))
             #print(neighbors)
             
             params = []
             for i in range(self.observation_size):
                 if i < len(neighbors):
-                    p = get_path_params(self.g, [id, neighbors[i]], self.amount, self.global_energy_mix)
+                    p = get_path_params(self.g, neighbors[i], self.amount, self.global_energy_mix)
                     params.append([p[f] for f in self.features])
                 else:
                     params.append([0] * len(self.features))
