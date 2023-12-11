@@ -101,8 +101,8 @@ def get_tx_params(tx, proto_type='LND'):
     return params
 
 alg = ['LND', 'H(LND)', 'A(LND)',
-       #'CLN', 'H(CLN)', #'A(CLN)',
-       #'ECL', 'H(ECL)', #'A(ECL)',
+       #'CLN', 'H(CLN)', 'A(CLN)',
+       'ECL', 'H(ECL)', 'A(ECL)',
        ]
 
 for a in tqdm(alg):
