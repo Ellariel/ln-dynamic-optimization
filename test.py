@@ -80,7 +80,8 @@ def load_model(proto_type='LND'):
                 model = model_class("MlpPolicy", E)
     return model
         
-def get_tx_params(tx, proto_type='LND'):
+def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10,
+                                        intercountry_failure_probablity=0.05):
     if proto_type[0] == 'A':
         proto_type = 'H' + proto_type[1:]
         E.transactions = [tx]
@@ -96,23 +97,32 @@ def get_tx_params(tx, proto_type='LND'):
                                  global_energy_mix=global_energy_mix,
                                  proto_type=proto_type, _e=action)    
     params = get_path_params(G, path, tx[2], global_energy_mix)
-    params['succeed'] = perform_payment(G, tx[0], tx[1], tx[2], path)
+    params['succeed'] = perform_payment(G, tx[0], tx[1], tx[2], path,
+                                        intercontinental_failure_probablity=intercontinental_failure_probablity,
+                                        intercountry_failure_probablity=intercountry_failure_probablity)
     #print(params['succeed'])
     return params
 
 alg = ['LND', 'H(LND)', 'A(LND)',
-       'CLN', 'H(CLN)', 'A(CLN)',
-       'ECL', 'H(ECL)', 'A(ECL)',
+       #'CLN', 'H(CLN)', 'A(CLN)',
+       #'ECL', 'H(ECL)', 'A(ECL)',
        ]
+
+failure_probablities = np.asarray(range(0, 50, 5)) / 1000
 
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
     if not os.path.exists(file_name):
         model = load_model(a)
-        results = []
-        random.seed(13)
-        np.random.seed(13)
-        for tx in tqdm(test_set, leave=True, desc=a): #[:1]
-            results.append(get_tx_params(tx, proto_type=a))
+        probes = {}
+        for p in tqdm(failure_probablities, desc=a):
+            results = []
+            random.seed(13)
+            np.random.seed(13)
+            for tx in tqdm(test_set[:1000], leave=False, desc=f"p={p}"):
+                results.append(get_tx_params(tx, proto_type=a,
+                                             intercontinental_failure_probablity=p*2,
+                                             intercountry_failure_probablity=p))
+            probes[p] = results
         with open(file_name, 'w') as f:
-            json.dump(results, f)
+            json.dump(probes, f)
