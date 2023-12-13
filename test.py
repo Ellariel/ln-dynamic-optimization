@@ -119,7 +119,7 @@ for a in tqdm(alg):
             results = []
             random.seed(13)
             np.random.seed(13)
-            for tx in tqdm(test_set[:1000], leave=False, desc=f"p={p}"):
+            for tx in tqdm(test_set, leave=False, desc=f"p={p}"):
                 results.append(get_tx_params(tx, proto_type=a,
                                              intercontinental_failure_probablity=p*2,
                                              intercountry_failure_probablity=p))
