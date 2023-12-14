@@ -104,7 +104,7 @@ def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10
     return params
 
 alg = ['LND', 'H(LND)', 'A(LND)',
-       #'CLN', 'H(CLN)', 'A(CLN)',
+       'CLN', 'H(CLN)', 'A(CLN)',
        #'ECL', 'H(ECL)', 'A(ECL)',
        ]
 
