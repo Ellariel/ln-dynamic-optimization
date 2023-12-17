@@ -1,6 +1,7 @@
 import os, json, pickle, argparse, glob
 from tqdm import tqdm
 from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
+from zipfile import ZipFile
 
 from proto import *
 from utils import *
@@ -114,7 +115,7 @@ attempts_count = 5
 set_random_seed(13)
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
-    if not os.path.exists(file_name):
+    if not os.path.exists(file_name + '.zip'):
         model = load_model(a)
         probes = {}
         for p in tqdm(failure_probablities, desc=a):
@@ -131,3 +132,7 @@ for a in tqdm(alg):
             probes[p] = attempts
         with open(file_name, 'w') as f:
             json.dump(probes, f)
+        with ZipFile(file_name + '.zip', 'w', ZipFile.ZIP_DEFLATED) as zip_object:
+            zip_object.write(file_name)
+        if os.path.exists(file_name + '.zip'):
+            os.remove(file_name)
