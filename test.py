@@ -1,7 +1,7 @@
 import os, json, pickle, argparse, glob
 from tqdm import tqdm
 from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
-from zipfile import ZipFile
+import zipfile
 
 from proto import *
 from utils import *
@@ -132,7 +132,7 @@ for a in tqdm(alg):
             probes[p] = attempts
         with open(file_name, 'w') as f:
             json.dump(probes, f)
-        with ZipFile(file_name + '.zip', 'w', ZipFile.ZIP_DEFLATED) as zip_object:
+        with zipfile.ZipFile(file_name + '.zip', 'w', zipfile.ZIP_DEFLATED) as zip_object:
             zip_object.write(file_name)
         if os.path.exists(file_name + '.zip'):
             os.remove(file_name)
