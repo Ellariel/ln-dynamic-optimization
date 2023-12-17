@@ -6,6 +6,21 @@ from tqdm import tqdm
 import random
 from geopy.distance import geodesic
 
+def is_empty(x):
+    if isinstance(x, (list, dict, str)):
+        return len(x) == 0
+    return pd.isna(x)
+
+def set_random_seed(seed=13):
+    random.seed(seed)
+    np.random.seed(seed)
+    return seed
+
+def get_random_seed(base_seed=None, fixed_range=1000):
+    if base_seed:
+        set_random_seed(base_seed)
+    return random.randint(0, fixed_range)
+
 def max_neighbors(G):
     def neighbors_count(G, id):
         return len(list(G.neighbors(id)))

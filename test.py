@@ -105,24 +105,29 @@ def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10
 
 alg = ['LND', 'H(LND)', 'A(LND)',
        'CLN', 'H(CLN)', 'A(CLN)',
-       #'ECL', 'H(ECL)', 'A(ECL)',
+       'ECL', 'H(ECL)', 'A(ECL)',
        ]
 
-failure_probablities = np.asarray(range(0, 50, 5)) / 1000
+failure_probablities = np.asarray(range(0, 100, 5)) / 1000
+attempts_count = 5
 
+set_random_seed(13)
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
     if not os.path.exists(file_name):
         model = load_model(a)
         probes = {}
         for p in tqdm(failure_probablities, desc=a):
-            results = []
-            random.seed(13)
-            np.random.seed(13)
-            for tx in tqdm(test_set, leave=False, desc=f"p={p}"):
-                results.append(get_tx_params(tx, proto_type=a,
-                                             intercontinental_failure_probablity=p*2,
-                                             intercountry_failure_probablity=p))
-            probes[p] = results
+            attempts = {}
+            for t in tqdm(range(attempts_count), leave=False, desc=f"p={p}"):
+                results = []
+                seed = get_random_seed()
+                set_random_seed(seed)
+                for tx in tqdm(test_set, leave=False, desc=f"seed={seed}"):
+                    results.append(get_tx_params(tx, proto_type=a,
+                                                intercontinental_failure_probablity=p*2,
+                                                intercountry_failure_probablity=p))
+                attempts[seed] = results
+        probes[p] = attempts
         with open(file_name, 'w') as f:
             json.dump(probes, f)
