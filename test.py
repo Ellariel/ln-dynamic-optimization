@@ -108,7 +108,7 @@ alg = ['LND', 'H(LND)', 'A(LND)',
        'ECL', 'H(ECL)', 'A(ECL)',
        ]
 
-failure_probablities = np.asarray(range(0, 100, 5)) / 1000
+failure_probablities = np.asarray(range(0, 105, 5)) / 1000
 attempts_count = 5
 
 set_random_seed(13)
