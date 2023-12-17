@@ -128,6 +128,6 @@ for a in tqdm(alg):
                                                 intercontinental_failure_probablity=p*2,
                                                 intercountry_failure_probablity=p))
                 attempts[seed] = results
-        probes[p] = attempts
+            probes[p] = attempts
         with open(file_name, 'w') as f:
             json.dump(probes, f)
