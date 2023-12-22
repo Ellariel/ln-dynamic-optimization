@@ -66,7 +66,7 @@ learning_rate = 0.000001
 
 #e = LNEnv(G, train_set, global_energy_mix=global_energy_mix)
 #check_env(e)
-
+utils.set_random_seed(48)
 for a in range(attempts + 1):
     print(f"approach: {approach}, env: {version}, n_envs: {n_envs}")
     print(f"train: {file_mask}")

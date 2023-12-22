@@ -101,7 +101,6 @@ def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10
     params['succeed'] = perform_payment(G, tx[0], tx[1], tx[2], path,
                                         intercontinental_failure_probablity=intercontinental_failure_probablity,
                                         intercountry_failure_probablity=intercountry_failure_probablity)
-    #print(params['succeed'])
     return params
 
 alg = ['LND', 'H(LND)', 'A(LND)',
@@ -112,14 +111,14 @@ alg = ['LND', 'H(LND)', 'A(LND)',
 failure_probablities = np.asarray(range(0, 105, 5)) / 1000
 attempts_count = 5
 
-set_random_seed(13)
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
     if not os.path.exists(file_name + '.zip'):
-        model = load_model()
+        model = load_model(a)
         probes = {}
         for p in tqdm(failure_probablities, desc=a):
             attempts = {}
+            set_random_seed(48)
             for t in tqdm(range(attempts_count), leave=False, desc=f"p={p}"):
                 results = []
                 seed = get_random_seed()
