@@ -17,7 +17,7 @@ parser.add_argument('--n_envs', default=4, type=int)
 parser.add_argument('--env', default='env', type=str)
 parser.add_argument('--attempts', default=1, type=int)
 parser.add_argument('--epochs', default=100, type=int)
-parser.add_argument('--timesteps', default=1e5, type=int)
+parser.add_argument('--timesteps', default=5e4, type=int)
 parser.add_argument('--proto', default='LND', type=str)
 
 args = parser.parse_args()
