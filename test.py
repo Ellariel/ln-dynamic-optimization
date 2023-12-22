@@ -116,7 +116,7 @@ set_random_seed(13)
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
     if not os.path.exists(file_name + '.zip'):
-        model = load_model(a)
+        model = load_model()
         probes = {}
         for p in tqdm(failure_probablities, desc=a):
             attempts = {}
