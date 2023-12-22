@@ -55,7 +55,7 @@ print(f'transations count: {len(T)}, train_set: {len(train_set)}, test_set: {len
 
 E = LNEnv(G, test_set, global_energy_mix=global_energy_mix, train=False)
 
-def load_model(proto_type='LND'):
+def load_model(proto_type='A(LND)'):
     model = None
     if proto_type[0] == 'A':
         proto_type = proto_type[2:5]
