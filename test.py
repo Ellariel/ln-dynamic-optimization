@@ -3,6 +3,9 @@ from tqdm import tqdm
 from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
 import zipfile
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from proto import *
 from utils import *
 

@@ -1,5 +1,4 @@
-tqdm
-pandas
-gymnasium==0.29
-setuptools==57.1.0
 stable-baselines3[extra]==2.2.1
+gymnasium==0.29
+pandas
+tqdm
