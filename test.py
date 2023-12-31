@@ -1,4 +1,4 @@
-import os, json, pickle, argparse, glob
+import os, json, pickle, argparse, glob, sys
 from tqdm import tqdm
 from stable_baselines3 import PPO, A2C, DDPG, TD3, SAC
 import zipfile
@@ -13,8 +13,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--approach', default='PPO', type=str)
 parser.add_argument('--n_envs', default=4, type=int)
 parser.add_argument('--env', default='env', type=str)
+parser.add_argument('--proto', nargs='+', type=str, default=['LND', 'CLN', 'ECL'])
 args = parser.parse_args()
 
+proto = args.proto
 n_envs = args.n_envs
 approach = args.approach
 
@@ -60,7 +62,7 @@ E = LNEnv(G, test_set, global_energy_mix=global_energy_mix, train=False)
 
 def load_model(proto_type='A(LND)'):
     model = None
-    if proto_type[0] == 'A':
+    if proto_type[0] == 'A' or proto_type[0] == 'X':
         proto_type = proto_type[2:5]
         file_mask = f'{approach}-{version}-{n_envs}-{proto_type}'
         weights_file = os.path.join(weights_dir, f'{file_mask}.sav')
@@ -86,7 +88,7 @@ def load_model(proto_type='A(LND)'):
         
 def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10,
                                         intercountry_failure_probablity=0.05):
-    if proto_type[0] == 'A':
+    if proto_type[0] == 'A' or proto_type[0] == 'X':
         proto_type = 'H' + proto_type[1:]
         E.transactions = [tx]
         obs, _ = E.reset()
@@ -106,10 +108,15 @@ def get_tx_params(tx, proto_type='LND', intercontinental_failure_probablity=0.10
                                         intercountry_failure_probablity=intercountry_failure_probablity)
     return params
 
-alg = ['LND', 'H(LND)', 'A(LND)',
-       'CLN', 'H(CLN)', 'A(CLN)',
-       'ECL', 'H(ECL)', 'A(ECL)',
-       ]
+alg = []
+for p in proto:
+    if p in ['LND', 'CLN', 'ECL']:
+        alg += [p, f"H({p})", f"A({p})", f"X({p})"]
+    else:
+        print(f'proto is {p}, but we expect LND, CLN or ECL')
+        sys.exit()
+
+print(alg)
 
 failure_probablities = np.asarray(range(0, 305, 5)) / 1000
 attempts_count = 5
@@ -117,7 +124,10 @@ attempts_count = 5
 for a in tqdm(alg):
     file_name = os.path.join(results_dir, f'{a}.json')
     if not os.path.exists(file_name + '.zip'):
-        model = load_model(a)
+        if a[0] == 'X':
+            model = load_model()
+        else:
+            model = load_model(a)
         probes = {}
         for p in tqdm(failure_probablities, desc=a):
             attempts = {}
