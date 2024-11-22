@@ -1,0 +1,10 @@
+,$native_{LND}$,$baseline_{LND}$,$improved_{LND}$,$native_{CLN}$,$baseline_{CLN}$,$improved_{CLN}$,$native_{ECL}$,$baseline_{ECL}$,$improved_{ECL}$
+$native_{LND}$,0.660,,***,*,*,**,,,
+$baseline_{LND}$,,0.673,**,⁺,,*,⁺,,
+$improved_{LND}$,***,**,0.760,,,,***,**,***
+$native_{CLN}$,*,⁺,,0.724,,,**,⁺,*
+$baseline_{CLN}$,*,,,,0.718,,**,,⁺
+$improved_{CLN}$,**,*,,,,0.753,***,*,**
+$native_{ECL}$,,⁺,***,**,**,***,0.628,,
+$baseline_{ECL}$,,,**,⁺,,*,,0.667,
+$improved_{ECL}$,,,***,*,⁺,**,,,0.654
