@@ -17,6 +17,7 @@ month = {4},
 volume = {146},
 pages = {110225},
 doi = {10.1016/j.engappai.2025.110225},
+}
 ```
 
 ### Setup
