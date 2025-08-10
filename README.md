@@ -1,12 +1,14 @@
 ## Hybrid Pathfinding Optimization for the Lightning Network with Reinforcement Learning
 
-### Plain
+### Journal paper
+
+#### Plain
 
 ```python
 Danila Valko and Daniel Kudenko (2025). Hybrid pathfinding optimization for the lightning network with reinforcement learning. Engineering Applications of Artificial Intelligence. https://doi.org/10.1016/j.engappai.2025.110225
 ```
 
-### BibTeX
+#### BibTeX
 ```python
 @misc{ValkoKudenko2025,
 author = {Danila Valko and Daniel Kudenko},
