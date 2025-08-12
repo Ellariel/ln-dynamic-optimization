@@ -10,7 +10,7 @@ Danila Valko and Daniel Kudenko (2025). Hybrid pathfinding optimization for the 
 
 #### BibTeX
 ```python
-@misc{ValkoKudenko2025,
+@article{ValkoKudenko2025,
 author = {Danila Valko and Daniel Kudenko},
 title = {Hybrid pathfinding optimization for the lightning network with reinforcement learning}, 
 journal = {Engineering Applications of Artificial Intelligence},
